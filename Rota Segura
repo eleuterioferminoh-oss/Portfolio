@@ -1,0 +1,612 @@
+Rota Segura — Sistema de Locação de Veículos
+Identificação
+Nome: Hugo Eleutério Fermino
+Matrícula: 1301392611034
+Descrição do projeto
+
+O Rota Segura é um sistema de locação de veículos desenvolvido em Java, executado por meio de um menu interativo no terminal.
+
+A aplicação permite realizar operações relacionadas ao gerenciamento de uma locadora de veículos, como:
+
+Cadastro e consulta de clientes;
+Cadastro e consulta de veículos;
+Consulta de veículos disponíveis;
+Abertura de locações;
+Devolução de veículos e fechamento de contratos;
+Consulta de contratos ativos e fechados;
+Impressão e exportação de comprovantes;
+Geração de relatório de fechamento;
+Gerenciamento da manutenção dos veículos;
+Persistência dos dados em arquivos.
+
+O ponto de entrada da aplicação é a classe Main, localizada no pacote com.rotasegura.main.
+
+Arquitetura
+
+A aplicação apresenta uma organização baseada na separação de responsabilidades entre interface, serviços, modelos, persistência, utilitários e exceções.
+
+Camada de apresentação
+
+A classe Main é responsável pela interação com o usuário através do terminal.
+
+Suas principais responsabilidades são:
+
+Exibir o menu principal;
+Ler as opções escolhidas pelo usuário;
+Solicitar os dados necessários para cada operação;
+Encaminhar as operações para LocadoraService;
+Exibir mensagens de sucesso e erro;
+Controlar o fluxo principal da aplicação.
+
+A classe EntradaUtil auxilia na leitura de dados digitados pelo usuário, como textos, números, valores decimais e datas.
+
+Camada de serviços
+
+A classe LocadoraService concentra as operações relacionadas às regras do sistema.
+
+Entre as operações utilizadas pela classe Main estão:
+
+cadastrarCliente();
+listarClientes();
+cadastrarVeiculo();
+listarVeiculos();
+listarVeiculosDisponiveis();
+abrirLocacao();
+devolverVeiculo();
+listarContratos();
+listarContratosAtivos();
+listarContratosFechados();
+exportarComprovante();
+gerarRelatorioFechamento();
+colocarEmManutencao();
+liberarDeManutencao().
+
+Dessa forma, a classe Main fica responsável principalmente pela interação com o usuário, enquanto as operações do sistema são delegadas ao serviço.
+
+Camada de persistência
+
+A classe PersistenciaService é utilizada para carregar e salvar os dados da aplicação.
+
+No início da execução, ela é criada apontando para o diretório:
+
+data
+
+
+Ao selecionar a opção 0, o sistema executa:
+
+service.salvarTudo();
+
+
+e então encerra a aplicação.
+
+Camada de modelo
+
+O sistema trabalha com diferentes objetos que representam os elementos da locadora:
+
+Cliente;
+Veiculo;
+Popular;
+Sedan;
+SUV;
+Contrato.
+
+A classe Veiculo é utilizada como referência para os diferentes tipos de veículos. Os tipos Popular, Sedan e SUV são criados de acordo com a categoria escolhida pelo usuário.
+
+O código também demonstra herança e polimorfismo. Por exemplo:
+
+Veiculo veiculo;
+
+switch (tipo) {
+    case 1 -> veiculo = new Popular(...);
+    case 2 -> veiculo = new Sedan(...);
+    case 3 -> veiculo = new SUV(...);
+}
+
+
+Além disso, são chamadas operações polimórficas do veículo:
+
+veiculo.calcularDiaria();
+veiculo.calcularSeguro();
+veiculo.calcularManutencao();
+
+
+Assim, o código pode trabalhar com diferentes tipos de veículos através da referência Veiculo.
+
+Tratamento de exceções
+
+A aplicação utiliza exceções específicas para tratar situações inválidas.
+
+Entre elas estão:
+
+ClienteInvalidoException;
+VeiculoInvalidoException;
+VeiculoIndisponivelException;
+DataInvalidaException.
+
+As operações do menu são executadas dentro de um bloco try/catch. Caso ocorra um erro, o sistema apresenta uma mensagem ao usuário e continua funcionando:
+
+*** ERRO TRATADO ***
+Mensagem: ...
+(O sistema continua operando normalmente.)
+
+Diagrama de classes
+
+O diagrama abaixo representa, de forma simplificada, os principais relacionamentos identificados no código.
+
+classDiagram
+
+    class Main {
+        +main(String[] args)
+        -exibirMenu()
+        -cadastrarCliente()
+        -listarClientes()
+        -cadastrarVeiculo()
+        -listarVeiculos()
+        -listarVeiculosDisponiveis()
+        -abrirLocacao()
+        -devolverVeiculo()
+        -listarContratos()
+        -imprimirContrato()
+        -gerarRelatorio()
+        -gerenciarManutencao()
+    }
+
+    class LocadoraService {
+        +cadastrarCliente()
+        +listarClientes()
+        +cadastrarVeiculo()
+        +listarVeiculos()
+        +listarVeiculosDisponiveis()
+        +abrirLocacao()
+        +devolverVeiculo()
+        +listarContratos()
+        +listarContratosAtivos()
+        +listarContratosFechados()
+        +buscarContratoPorId()
+        +exportarComprovante()
+        +gerarRelatorioFechamento()
+        +colocarEmManutencao()
+        +liberarDeManutencao()
+        +salvarTudo()
+    }
+
+    class PersistenciaService {
+        +PersistenciaService(String diretorio)
+    }
+
+    class EntradaUtil {
+        +lerTexto()
+        +lerInteiro()
+        +lerDouble()
+        +lerData()
+        +confirmar()
+    }
+
+    class Cliente {
+        -cpf
+        -nome
+        -telefone
+        -email
+        -idade
+    }
+
+    class Veiculo {
+        -placa
+        -marca
+        -modelo
+        -ano
+        -quilometragem
+        +calcularDiaria()
+        +calcularSeguro()
+        +calcularManutencao()
+    }
+
+    class Popular
+    class Sedan
+    class SUV
+
+    class Contrato {
+        +imprimir()
+    }
+
+    Main --> LocadoraService
+    Main --> EntradaUtil
+    LocadoraService --> PersistenciaService
+    LocadoraService --> Cliente
+    LocadoraService --> Veiculo
+    LocadoraService --> Contrato
+
+    Veiculo <|-- Popular
+    Veiculo <|-- Sedan
+    Veiculo <|-- SUV
+
+    Contrato --> Cliente
+    Contrato --> Veiculo
+
+Observação: o diagrama é uma representação simplificada, pois somente o arquivo Main.java foi utilizado como base para esta documentação.
+Funcionalidades
+1. Cadastro de cliente
+
+A opção 1 permite cadastrar um cliente informando:
+
+CPF;
+Nome completo;
+Telefone;
+E-mail;
+Idade.
+
+Exemplo:
+
+--- Cadastro de Cliente ---
+CPF (somente numeros): 12345678900
+Nome completo: João da Silva
+Telefone: 11999999999
+E-mail: joao@email.com
+Idade: 30
+
+[OK] Cliente cadastrado com sucesso!
+
+2. Listagem de clientes
+
+A opção 2 exibe todos os clientes cadastrados.
+
+Caso não existam clientes:
+
+Nenhum cliente cadastrado.
+
+3. Cadastro de veículo
+
+A opção 3 permite cadastrar um veículo.
+
+As categorias disponíveis são:
+
+1 = Popular
+2 = Sedan
+3 = SUV
+
+
+São solicitadas informações como:
+
+Placa;
+Marca;
+Modelo;
+Ano;
+Quilometragem.
+
+Após o cadastro, o sistema também apresenta valores calculados para:
+
+Diária;
+Seguro por dia;
+Manutenção.
+4. Listagem de veículos
+
+A opção 4 apresenta todos os veículos cadastrados na frota.
+
+5. Veículos disponíveis
+
+A opção 5 apresenta somente os veículos disponíveis para locação.
+
+6. Abertura de locação
+
+A opção 6 inicia uma nova locação.
+
+O usuário informa:
+
+CPF do cliente;
+Placa do veículo;
+Data de início;
+Data prevista para devolução.
+
+Após as validações, o sistema cria o contrato e imprime suas informações.
+
+7. Devolução do veículo
+
+A opção 7 permite realizar a devolução e fechar um contrato.
+
+O usuário informa:
+
+ID do contrato;
+Data efetiva de devolução.
+
+Após o fechamento, o sistema imprime o contrato e exporta automaticamente o comprovante.
+
+8. Consulta de contratos
+
+A opção 8 permite consultar:
+
+1 = Todos
+2 = Ativos
+3 = Fechados
+
+9. Comprovante de contrato
+
+A opção 9 permite localizar um contrato através de seu ID, imprimir seus dados e, opcionalmente, exportá-lo para um arquivo de texto.
+
+10. Relatório
+
+A opção 10 gera e exibe o relatório de fechamento através do método:
+
+service.gerarRelatorioFechamento();
+
+11. Manutenção
+
+A opção 11 permite alterar o estado de manutenção de um veículo:
+
+1 = Colocar em manutenção
+2 = Liberar de manutenção
+
+
+Um veículo em manutenção deixa de estar disponível para locação até ser liberado.
+
+0. Sair
+
+A opção 0 salva os dados e encerra o programa:
+
+Dados salvos. Encerrando o sistema. Ate logo!
+
+Como compilar e executar
+
+Como o código apresentado utiliza uma estrutura de pacotes Java, os arquivos devem estar organizados de acordo com seus respectivos package.
+
+Uma estrutura esperada é semelhante a:
+
+projeto/
+├── src/
+│   └── com/
+│       └── rotasegura/
+│           ├── main/
+│           │   └── Main.java
+│           ├── model/
+│           ├── service/
+│           ├── exception/
+│           └── util/
+└── data/
+
+Pré-requisito
+
+É necessário ter o Java Development Kit (JDK) instalado.
+
+Para verificar a instalação:
+
+java -version
+javac -version
+
+Compilação
+
+A partir do diretório que contém a pasta src, pode-se compilar os arquivos Java para uma pasta de saída:
+
+mkdir -p out
+javac -d out $(find src -name "*.java")
+
+
+No Windows PowerShell, uma alternativa é:
+
+mkdir out
+javac -d out (Get-ChildItem -Recurse src -Filter *.java).FullName
+
+Execução
+
+Depois da compilação:
+
+java -cp out com.rotasegura.main.Main
+
+
+Ao iniciar, o sistema apresenta o menu principal:
+
+============================================================
+       SISTEMA DE LOCACAO - ROTA SEGURA
+============================================================
+
+------------------------ MENU PRINCIPAL ------------------------
+ 1. Cadastrar cliente
+ 2. Listar clientes
+ 3. Cadastrar veiculo
+ 4. Listar todos os veiculos
+ 5. Listar veiculos disponiveis
+ 6. Abrir nova locacao
+ 7. Devolver veiculo / Fechar contrato
+ 8. Listar contratos
+ 9. Imprimir / Exportar comprovante de contrato
+10. Relatorio de fechamento
+11. Gerenciar manutencao de veiculo
+ 0. Sair e salvar
+----------------------------------------------------------------
+
+Caso o projeto utilize uma IDE como IntelliJ IDEA, Eclipse ou VS Code, também é possível executar a classe com.rotasegura.main.Main diretamente pela IDE.
+Cenários de teste realizados
+
+Os cenários abaixo são exemplos de testes que podem ser realizados a partir das funcionalidades disponíveis no código.
+
+Cenário 1 — Cadastro de cliente válido
+
+Objetivo: verificar o cadastro de um cliente.
+
+Procedimento:
+
+Executar a aplicação.
+Selecionar a opção 1.
+Informar CPF, nome, telefone, e-mail e idade válidos.
+Confirmar o cadastro.
+
+Resultado esperado:
+
+[OK] Cliente cadastrado com sucesso!
+
+
+O cliente deve aparecer posteriormente na opção 2.
+
+Cenário 2 — Cadastro de veículo Popular
+
+Objetivo: verificar a criação de um veículo da categoria Popular.
+
+Procedimento:
+
+Selecionar a opção 3.
+Informar categoria 1.
+Informar placa, marca, modelo, ano e quilometragem.
+Confirmar o cadastro.
+
+Resultado esperado:
+
+[OK] Veiculo cadastrado com sucesso!
+
+
+O sistema também deve apresentar os valores de diária, seguro e manutenção.
+
+Cenário 3 — Cadastro de Sedan ou SUV
+
+Objetivo: verificar o polimorfismo na criação dos veículos.
+
+Procedimento:
+
+Selecionar a opção 3.
+Escolher categoria 2 para Sedan ou 3 para SUV.
+Informar os dados do veículo.
+
+Resultado esperado:
+
+O sistema deve criar o objeto correspondente à categoria escolhida e cadastrá-lo como um Veiculo.
+
+Cenário 4 — Categoria de veículo inválida
+
+Objetivo: verificar o tratamento de uma categoria inexistente.
+
+Procedimento:
+
+Selecionar a opção 3.
+Informar uma categoria diferente de 1, 2 ou 3.
+
+Resultado esperado:
+
+O sistema deve lançar VeiculoInvalidoException e apresentar uma mensagem de erro, sem encerrar a aplicação.
+
+Cenário 5 — Abertura de locação
+
+Objetivo: verificar o fluxo de criação de um contrato.
+
+Pré-condições:
+
+Cliente cadastrado;
+Veículo cadastrado;
+Veículo disponível.
+
+Procedimento:
+
+Selecionar a opção 6.
+Informar o CPF do cliente.
+Informar a placa do veículo.
+Informar as datas de início e devolução.
+
+Resultado esperado:
+
+[OK] Locacao aberta com sucesso!
+
+
+Um contrato deve ser criado e exibido.
+
+Cenário 6 — Tentativa de locação de veículo indisponível
+
+Objetivo: verificar o controle de disponibilidade dos veículos.
+
+Procedimento:
+
+Abrir uma locação para determinado veículo.
+Tentar abrir outra locação utilizando o mesmo veículo enquanto ele estiver indisponível.
+
+Resultado esperado:
+
+O sistema deve informar o erro através de VeiculoIndisponivelException, mantendo a aplicação em funcionamento.
+
+Cenário 7 — Devolução do veículo
+
+Objetivo: verificar o encerramento de uma locação.
+
+Pré-condição:
+
+Existência de um contrato ativo.
+
+Procedimento:
+
+Selecionar a opção 7.
+Informar o ID do contrato.
+Informar a data efetiva de devolução.
+
+Resultado esperado:
+
+[OK] Veiculo devolvido e contrato fechado!
+
+
+O contrato deve ser fechado e o comprovante deve ser exportado.
+
+Cenário 8 — Gerenciamento de manutenção
+
+Objetivo: verificar a alteração do estado de manutenção de um veículo.
+
+Procedimento:
+
+Selecionar a opção 11.
+Escolher 1.
+Informar a placa do veículo.
+
+Resultado esperado:
+
+[OK] Veiculo colocado em manutencao.
+
+
+Depois, selecionando a opção 11 novamente e escolhendo 2, espera-se:
+
+[OK] Veiculo liberado e disponivel novamente.
+
+Cenário 9 — Consulta de contratos
+
+Objetivo: verificar os filtros de contratos.
+
+Procedimento:
+
+Selecionar a opção 8 e testar:
+
+1 = Todos
+2 = Ativos
+3 = Fechados
+
+
+Resultado esperado:
+
+O sistema deve apresentar os contratos correspondentes ao filtro selecionado.
+
+Cenário 10 — Encerramento da aplicação
+
+Objetivo: verificar o salvamento dos dados.
+
+Procedimento:
+
+Realizar alguns cadastros ou locações.
+Selecionar a opção 0.
+
+Resultado esperado:
+
+Dados salvos. Encerrando o sistema. Ate logo!
+
+
+Os dados devem ser persistidos pelo PersistenciaService.
+
+Conceitos de programação utilizados
+
+A implementação apresentada demonstra diversos conceitos de programação orientada a objetos:
+
+Encapsulamento: utilização de classes para representar clientes, veículos e contratos.
+Herança: Popular, Sedan e SUV são especializações de Veiculo.
+Polimorfismo: diferentes tipos de veículos são manipulados através da referência Veiculo.
+Abstração: a lógica de negócio é concentrada nos serviços e os detalhes de interação ficam na classe Main.
+Tratamento de exceções: utilização de exceções específicas para representar erros de negócio.
+Separação de responsabilidades: apresentação, serviços, modelos, persistência e utilitários são organizados em pacotes distintos.
+Persistência de dados: os dados são salvos através do PersistenciaService.
+Interface de linha de comando: interação com o usuário realizada através do terminal.
+Considerações finais
+
+O sistema Rota Segura implementa um fluxo completo de gerenciamento básico de uma locadora de veículos, desde o cadastro dos clientes e veículos até a abertura, acompanhamento e encerramento das locações.
+
+A classe Main funciona como ponto central de interação com o usuário, delegando as operações para LocadoraService. A utilização de subclasses para os diferentes tipos de veículos demonstra o uso de herança e polimorfismo, enquanto as exceções específicas contribuem para o tratamento dos erros de negócio.
+
+Aluno: Hugo Eleutério Fermino
+Matrícula: 1301392611034
